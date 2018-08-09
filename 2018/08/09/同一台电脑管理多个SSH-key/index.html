@@ -73,20 +73,34 @@
 <p> 可直接按Enter进入生成。</p>
 </li>
 <li><p>查看生成的ssh key</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">    $ cd /Users/caichenghan/.ssh</span><br><span class="line">    $ ls</span><br><span class="line">    ```    </span><br><span class="line">   目录下会多出2个文件，分别为`id_rsa_github`、`id_rsa_github.pub`，前者为私钥，后者为公钥，我们只需要把公钥上传到github账户的公钥管理中即可。</span><br><span class="line">   </span><br><span class="line">   我们还可以使用Finder查看该路径：Finder-&gt;右键-&gt;前往文件夹-&gt;`~/.ssh`</span><br><span class="line">   </span><br><span class="line">- 查看公钥</span><br></pre></td></tr></table></figure>
-<p>  &amp; cat ~/.ssh/id_rsa_github.pub</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">   查看名为`id_rsa_github.pub`的公钥，然后将公复制下来，打开github个人设置中的公钥管理中，添加公钥即可。</span><br><span class="line"> </span><br><span class="line">- 账户验证</span><br></pre></td></tr></table></figure>
-<p>  ssh -T <a href="mailto:git@github.com" target="_blank" rel="noopener">git@github.com</a></p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">此时会有个提示，如下</span><br></pre></td></tr></table></figure>
-<p>  The authenticity of host ‘github.com (52.74.223.119)’ can’t be established.<br>  RSA key fingerprint is SHA256:nThbg6kXUpJWGl7E1IGOCspRomTxdCARLviKw6E5SY8.<br>  Are you sure you want to continue connecting (yes/no)?</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">   说是无法与名为`github.com`的站点建立真实可靠的链接，RSA秘钥的指纹识别为256位的SHA....是否需要继续链接？</span><br><span class="line">   </span><br><span class="line">   其实说白了就是要在本地保存github.com的公钥，与githu信息交互的时候要带上这个公钥，以便于github解密。有点类似于githug给你一把锁（公钥），你用这个锁锁住信息，然后丢给github。github就可以用它自己的钥匙（私钥）来解开这把锁来查看信息了。</span><br><span class="line">   </span><br><span class="line">   站点的公钥信息，可以在`~/.ssh`目录下的`known_host`里查看。有时候需要删除这个`known_host`里的站点公钥，重新建立安全连接。</span><br><span class="line">   </span><br><span class="line">   然而，此时的验证确是失败的，因为这个验证会使用默认的名为`id_rsa`和`id_rsa.pub`的文件进行信息交互，很显然这不是我们想要的。what can i do ?</span><br><span class="line"></span><br><span class="line">- 生成ssh配置文件</span><br></pre></td></tr></table></figure>
-<p>  $ vim ~/.ssh/config</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">配置`github`的ssh key</span><br></pre></td></tr></table></figure>
-<p>  Host github<br>  HostName github.com<br>  PreferredAuthentications publickey<br>  IdentityFile ~/.ssh/id_rsa_github</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">   其中`Host`为站点；`HostName`为站点名；`PreferredAuthentications`为优先使用公钥连接；`IdentityFile`，私钥路径。</span><br><span class="line">    </span><br><span class="line">   如果站点为`ip地址`，则用`ip地址`代替`域名`即可。</span><br><span class="line">   </span><br><span class="line">- 再次验证</span><br></pre></td></tr></table></figure>
-<p>  ssh -T <a href="mailto:git@github.com" target="_blank" rel="noopener">git@github.com</a></p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"> </span><br></pre></td></tr></table></figure>
-<p>  Hi xxx! You’ve successfully …<br>  <code>`</code><br> 成功！</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ cd /Users/caichenghan/.ssh</span><br><span class="line">$ ls</span><br></pre></td></tr></table></figure>
+<p> 目录下会多出2个文件，分别为<code>id_rsa_github</code>、<code>id_rsa_github.pub</code>，前者为私钥，后者为公钥，我们只需要把公钥上传到github账户的公钥管理中即可。</p>
+<p> 我们还可以使用Finder查看该路径：Finder-&gt;右键-&gt;前往文件夹-&gt;<code>~/.ssh</code></p>
+</li>
+<li><p>查看公钥</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&amp; cat ~/.ssh/id_rsa_github.pub</span><br></pre></td></tr></table></figure>
+<p> 查看名为<code>id_rsa_github.pub</code>的公钥，然后将公复制下来，打开github个人设置中的公钥管理中，添加公钥即可。</p>
+</li>
+<li><p>账户验证</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -T git@github.com</span><br></pre></td></tr></table></figure>
+<p> 此时会有个提示，如下</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">The authenticity of host &apos;github.com (52.74.223.119)&apos; can&apos;t be established.</span><br><span class="line">RSA key fingerprint is SHA256:nThbg6kXUpJWGl7E1IGOCspRomTxdCARLviKw6E5SY8.</span><br><span class="line">Are you sure you want to continue connecting (yes/no)?</span><br></pre></td></tr></table></figure>
+<p> 说是无法与名为<code>github.com</code>的站点建立真实可靠的链接，RSA秘钥的指纹识别为256位的SHA….是否需要继续链接？</p>
+<p> 其实说白了就是要在本地保存github.com的公钥，与githu信息交互的时候要带上这个公钥，以便于github解密。有点类似于githug给你一把锁（公钥），你用这个锁锁住信息，然后丢给github。github就可以用它自己的钥匙（私钥）来解开这把锁来查看信息了。</p>
+<p> 站点的公钥信息，可以在<code>~/.ssh</code>目录下的<code>known_host</code>里查看。有时候需要删除这个<code>known_host</code>里的站点公钥，重新建立安全连接。</p>
+<p> 然而，此时的验证确是失败的，因为这个验证会使用默认的名为<code>id_rsa</code>和<code>id_rsa.pub</code>的文件进行信息交互，很显然这不是我们想要的。what can i do ?</p>
+</li>
+<li><p>生成ssh配置文件</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vim ~/.ssh/config</span><br></pre></td></tr></table></figure>
+<p> 配置<code>github</code>的ssh key</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Host github</span><br><span class="line">HostName github.com</span><br><span class="line">PreferredAuthentications publickey</span><br><span class="line">IdentityFile ~/.ssh/id_rsa_github</span><br></pre></td></tr></table></figure>
+<p> 其中<code>Host</code>为站点；<code>HostName</code>为站点名；<code>PreferredAuthentications</code>为优先使用公钥连接；<code>IdentityFile</code>，私钥路径。</p>
+<p> 如果站点为<code>ip地址</code>，则用<code>ip地址</code>代替<code>域名</code>即可。</p>
+</li>
+<li><p>再次验证</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -T git@github.com</span><br></pre></td></tr></table></figure>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Hi xxx! You&apos;ve successfully ...</span><br></pre></td></tr></table></figure>
+<p> 成功！</p>
 <p> 同理，我们还可以继续添加其它账号的<code>ssh key</code>，这样就可以同一台电脑，使用多个<code>ssh key</code>免密码的git操作了。</p>
 </li>
 </ul>
@@ -95,6 +109,8 @@
 
     <div class="pagenator post-pagenator">
     <!--- 上一篇 --->
+    
+        <a class="extend prev post-prev" href="/2018/08/09/制作自己的cocoapods/">上一篇</a>
     
 
     <!--- 更新时间 --->
