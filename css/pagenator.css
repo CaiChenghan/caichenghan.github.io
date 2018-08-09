@@ -5,6 +5,7 @@
 }
 .post-pagenator {
   max-width: 600px;
+  height: 30px;
 }
 .post-pagenator p {
   position: absolute;
