@@ -55,119 +55,59 @@
     <div class="container">
         <article class="post markdown-style">
   <h1 class="post-title">制作自己的cocoapods</h1>
-  <blockquote>
-<p>Podspec 制作</p>
-</blockquote>
-<ul>
-<li><p>Podspec创建</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ pod lib create MyTest</span><br></pre></td></tr></table></figure>
-<p> 创建名为MyTest的工程，执行此命令后，pod会向其远程服务器下拉工程文件模板及相关依赖。</p>
-<p> 下拉后，按照提示填入相应的字段即可。</p>
-<p> 例如<code>平台类型</code>、<code>语言</code>、<code>Demo</code>、<code>测试框架</code>、<code>界面测试</code>、<code>类前缀</code>等，可按实际情况填写。</p>
-<p> 在创建工程前，最好先cd到指定目录下，避免找不到工程文件。</p>
-</li>
-<li><p>Podspec修改</p>
-<p> 工程创建完成后，文件结构可如下所示：</p>
-<p> <code>_Pods.xcodeproj</code></p>
-<p> <code>Example</code></p>
-<p> <code>LICENSE</code></p>
-<p> <code>MyTest</code></p>
-<p> <code>MyTest.podspec</code></p>
-<p> <code>README.md</code></p>
-<p> 其中<code>Example</code>是刚才创建的demo工程，我们可以在这里面写自己的demo。里面用Pod管理的第三方，可以随意pod。</p>
-<p> <code>MyTest</code>下需要存放源代码，也就是需要把自己的pod库源代码存放在里面。注意目录结构，后面会用得到。</p>
-<p> <code>MyTest.podspec</code>这个我们需要做修改，打开<code>Example</code>里的demo工程，就可以通过Xcode看到这个podspec文件了。按照该文件的要求，进行修改。其中<code>s.source_files</code>需要<strong><em>重点注意</em></strong>，路径别修改错了。例如我的<code>s.source_files = &#39;MyTest\*.{h,m}&#39;</code>，根目录：MyTest目录-&gt;所有的.h和.m文件。如果这个路径写错了，后面验证Podspec的时候，肯定不通过。</p>
-</li>
-<li><p>补充Demo</p>
-<p> 打开Demo工程，可在里面书写自己的类使用实例。</p>
-<p> 注意：若更改了原有<code>MyTest</code>下的目录结构及文件，有可能造成Demo工程运行不起来的情况，此时只需在终端执行<code>pod install</code>（注意pod执行路径），然后关闭工程，重新打开这个Demo即可。我估计是文件路径有变动，但是Demo工程读取的还是旧的文件路径。</p>
-</li>
-<li><p>Podspec验证</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ pod lib lint</span><br></pre></td></tr></table></figure>
-<p> 正常情况下，验证是通过的<code>MyTest passed validation.</code></p>
-<p> 如果验证出错，需根据错误提示进行处理。</p>
-</li>
-</ul>
-<blockquote>
-<p>代码上传</p>
-</blockquote>
-<ul>
-<li><p>添加远程git仓库地址</p>
-<p> 以上操作后，我们需要将我们的代码上传到远程仓库。</p>
-<p> 若是新建仓库，个人建议建立一个空的仓库，即使是README.md也不需要。然后在整个工程的根目录下，执行操作</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git remote add origin xxx.xxx.git</span><br></pre></td></tr></table></figure>
-<p> 也就是把远程仓库地址添加到工程里，这样我们就可以进行代码的提交。</p>
-<p> 若是已有仓库，或者是仓库有文件。个人建议先将此仓库克隆下来，然后把我们用pod创建的工程整个拖进去，这样我们就可以进行代码提交了。</p>
-</li>
-<li><p>添加tag</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ git add -A &amp;&amp; git commit -m &quot;Release 0.1.0&quot;</span><br><span class="line">$ git tag &apos;0.1.0&apos;</span><br><span class="line">$ git push --tags</span><br></pre></td></tr></table></figure>
-<p> 需要注意的是，这个tag需要与podspec里的version号一致，否则在提交podspec到pod远程仓库的时候会出错。</p>
-</li>
-<li><p>代码提交</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git push origin master</span><br></pre></td></tr></table></figure>
-<p> 至此，所有的文件都应该是上传到远程代码仓库了，我们可以查看自己的远程仓库，看是否有提交记录。</p>
-</li>
-</ul>
-<blockquote>
-<p>Podspec提交公有仓库</p>
-</blockquote>
-<ul>
-<li><p>公有仓库说明</p>
-<p> 此处的公有仓库，指的是cocoapods官方的仓库。用于存放用户提交的podspec文件，以便于所有用户使用pod拉取第三方代码。</p>
-</li>
-<li><p>注册设备</p>
-<p> 在向cocoapods远程仓库提交自己的podspec，需要进行设备注册（认证）。</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ pod trunk register xxx@xxx.com &apos;my name&apos; --description=&apos;my macbook air&apos;</span><br></pre></td></tr></table></figure>
-<p> 然后查看自己的邮件，复制邮件中的链接，用浏览器打开即可。（此操作可能出现失败，需良好的网络环境）</p>
-</li>
-<li><p>提交<code>podspec</code></p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ pod trunk push MyTest.podspec</span><br></pre></td></tr></table></figure>
-<p> 注意命令执行的目录，需要项目根目录执行。</p>
-<p> 正常情况下，会提示你提交成功，然后就可以用pod搜索自己的库了。例如<code>$ pod search MyTest</code>，就可以搜索到我刚才提交的MyTest的pod资源了。</p>
-<p> 如果搜索不到，可能需要删除索引文件了。</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ rm ~/Library/Caches/CocoaPods/search_index.json</span><br></pre></td></tr></table></figure>
-<p> 然后再次执行<code>pod search</code>。</p>
-</li>
-</ul>
-<blockquote>
-<p>Podspec提交私有仓库</p>
-</blockquote>
-<ul>
-<li><p>私有仓库说明</p>
-<p> 此处的私有仓库，指的是个人或者公司使用而不让其他人使用的仓库。与公有仓库类似，用于存放用户提交的podspec文件，以便于私有用户使用pod拉取自己的代码。</p>
-</li>
-<li><p>私有仓库创建</p>
-<p> 此创建与普通git仓库创建类似，最好使用README.md初始化，顺便补充README.md文件信息。</p>
-</li>
-<li><p>私有仓库本地安装</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ pod repo add MyRepo xxx.xxx.git</span><br></pre></td></tr></table></figure>
-<p> 在本地安装一个名叫<code>MyRepo</code>的私有仓库，<code>xxx.xxx.git</code>为私有仓库地址。</p>
-</li>
-<li><p>查看本地私有仓库</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ cd ~/.cocoapods/repos</span><br><span class="line">$ ls</span><br></pre></td></tr></table></figure>
-<p> 可查看此文件夹下，除了官方的master仓库，还会有自己刚刚安装的MyRepo私有仓库。我们也可以顺带看看官方的仓库里到底都有什么。</p>
-</li>
-<li><p>提交<code>podspec</code></p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ pod repo push MyRepo MyTest.podspec</span><br></pre></td></tr></table></figure>
-<p> 向私有库<code>MyRepo</code>提交<code>MyTest.podspec</code>文件。</p>
-<p> 需要注意的是，在提交podspec前，同样需要修改podspec文件，验证、打tag，源码提交。但私有库的验证，需要加上<code>--private</code>。完整的验证为：<code>$ pod lib lint --private</code>。</p>
-</li>
-<li><p>私有库引用</p>
-<p> 只需要在编辑Podfile文件的时候，指定source源即可。</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">source ‘xxx.xxx.com/MyRepo.git’</span><br></pre></td></tr></table></figure>
-<p> 顺便补充官方的source源</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">source ‘https://github.com/CocoaPods/Specs.git’</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>信息补充</p>
-<p> 关于私有仓库：</p>
-<p> <code>私有仓库只是用来存放私有的podspec，不存放代码。可为外网git，也可为内网git。总而言之，只是podspec的仓库。</code></p>
-<p> 关于代码仓库：</p>
-<p> <code>代码仓库用来存放自己的源代码的git，可为外网git，也可为内网git。总而言之，只是代码的仓库。</code></p>
-<p> 一个私有库，可以存放n多个podspec文件，管理着n多个私有pod。</p>
-<p> 私有仓库可以随意删除，但不会影响到代码仓库。私有仓库不要加入代码，因为加了也没有任何作用。</p>
-<p> 私有库与公有库基本一样，只是一个是官方的git，一个是自己的git。私有库需安装，podspec验证需加上说明，使用的时候需引入。</p>
-</li>
-</ul>
+  <h2 id="Podspec-制作"><a href="#Podspec-制作" class="headerlink" title="Podspec 制作"></a>Podspec 制作</h2><h4 id="Podspec创建"><a href="#Podspec创建" class="headerlink" title="Podspec创建"></a>Podspec创建</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ pod lib create MyTest</span><br></pre></td></tr></table></figure>
+<p>创建名为MyTest的工程，执行此命令后，pod会向其远程服务器下拉工程文件模板及相关依赖。</p>
+<p>下拉后，按照提示填入相应的字段即可。</p>
+<p>例如 <code>平台类型</code> 、 <code>语言</code> 、 <code>Demo</code> 、 <code>测试框架</code> 、 <code>界面测试</code> 、 <code>类前缀</code> 等，可按实际情况填写。</p>
+<p>在创建工程前，最好先cd到指定目录下，避免找不到工程文件。</p>
+<h4 id="Podspec修改"><a href="#Podspec修改" class="headerlink" title="Podspec修改"></a>Podspec修改</h4><p>工程创建完成后，文件结构可如下所示：</p>
+<p><code>_Pods.xcodeproj</code> <code>Example</code> <code>LICENSE</code> <code>MyTest</code> <code>MyTest.podspec</code> <code>README.md</code></p>
+<p>其中 <code>Example</code> 是刚才创建的demo工程，我们可以在这里面写自己的demo。里面用Pod管理的第三方，可以随意pod。</p>
+<p><code>MyTest</code> 下需要存放源代码，也就是需要把自己的pod库源代码存放在里面。注意目录结构，后面会用得到。</p>
+<p><code>MyTest.podspec</code> 这个我们需要做修改，打开 <code>Example</code> 里的demo工程，就可以通过Xcode看到这个podspec文件了。按照该文件的要求，进行修改。其中 <code>s.source_files</code> 需要<strong><em>重点注意</em></strong>，路径别修改错了。例如我的 <code>s.source_files = &#39;MyTest\*.{h,m}&#39;</code> ，根目录：MyTest目录-&gt;所有的.h和.m文件。如果这个路径写错了，后面验证Podspec的时候，肯定不通过。</p>
+<h4 id="补充Demo"><a href="#补充Demo" class="headerlink" title="补充Demo"></a>补充Demo</h4><p>打开Demo工程，可在里面书写自己的类使用实例。</p>
+<p>注意：若更改了原有 <code>MyTest</code> 下的目录结构及文件，有可能造成Demo工程运行不起来的情况，此时只需在终端执行 <code>pod install</code> （注意pod执行路径），然后关闭工程，重新打开这个Demo即可。我估计是文件路径有变动，但是Demo工程读取的还是旧的文件路径。</p>
+<h4 id="Podspec验证"><a href="#Podspec验证" class="headerlink" title="Podspec验证"></a>Podspec验证</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ pod lib lint</span><br></pre></td></tr></table></figure>
+<p>正常情况下，验证是通过的 <code>MyTest passed validation.</code></p>
+<p>如果验证出错，需根据错误提示进行处理。</p>
+<h4 id="代码上传"><a href="#代码上传" class="headerlink" title="代码上传"></a>代码上传</h4><h6 id="添加远程git仓库地址"><a href="#添加远程git仓库地址" class="headerlink" title="添加远程git仓库地址"></a>添加远程git仓库地址</h6><p>以上操作后，我们需要将我们的代码上传到远程仓库。</p>
+<p>若是新建仓库，个人建议建立一个空的仓库，即使是README.md也不需要。然后在整个工程的根目录下，执行操作</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git remote add origin xxx.xxx.git</span><br></pre></td></tr></table></figure>
+<p>也就是把远程仓库地址添加到工程里，这样我们就可以进行代码的提交。</p>
+<p>   若是已有仓库，或者是仓库有文件。个人建议先将此仓库克隆下来，然后把我们用pod创建的工程整个拖进去，这样我们就可以进行代码提交了。</p>
+<h6 id="添加tag"><a href="#添加tag" class="headerlink" title="添加tag"></a>添加tag</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ git add -A &amp;&amp; git commit -m &quot;Release 0.1.0&quot;</span><br><span class="line">$ git tag &apos;0.1.0&apos;</span><br><span class="line">$ git push --tags</span><br></pre></td></tr></table></figure>
+<p>需要注意的是，这个tag需要与podspec里的version号一致，否则在提交podspec到pod远程仓库的时候会出错。</p>
+<h4 id="代码提交"><a href="#代码提交" class="headerlink" title="代码提交"></a>代码提交</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git push origin master</span><br></pre></td></tr></table></figure>
+<p>至此，所有的文件都应该是上传到远程代码仓库了，我们可以查看自己的远程仓库，看是否有提交记录。</p>
+<h2 id="Podspec提交公有仓库"><a href="#Podspec提交公有仓库" class="headerlink" title="Podspec提交公有仓库"></a>Podspec提交公有仓库</h2><h4 id="公有仓库说明"><a href="#公有仓库说明" class="headerlink" title="公有仓库说明"></a>公有仓库说明</h4><p>此处的公有仓库，指的是cocoapods官方的仓库。用于存放用户提交的podspec文件，以便于所有用户使用pod拉取第三方代码。</p>
+<h4 id="注册设备"><a href="#注册设备" class="headerlink" title="注册设备"></a>注册设备</h4><p>在向cocoapods远程仓库提交自己的podspec，需要进行设备注册（认证）。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ pod trunk register xxx@xxx.com &apos;my name&apos; --description=&apos;my macbook air&apos;</span><br></pre></td></tr></table></figure>
+<p>然后查看自己的邮件，复制邮件中的链接，用浏览器打开即可。（此操作可能出现失败，需良好的网络环境）</p>
+<h4 id="提交-podspec"><a href="#提交-podspec" class="headerlink" title="提交.podspec"></a>提交.podspec</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ pod trunk push MyTest.podspec</span><br></pre></td></tr></table></figure>
+<p>注意命令执行的目录，需要项目根目录执行。</p>
+<p>正常情况下，会提示你提交成功，然后就可以用pod搜索自己的库了。例如 <code>$ pod search MyTest</code> ，就可以搜索到我刚才提交的MyTest的pod资源了。</p>
+<p>如果搜索不到，可能需要删除索引文件了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ rm ~/Library/Caches/CocoaPods/search_index.json</span><br></pre></td></tr></table></figure>
+<p>然后再次执行 <code>pod search</code> 。</p>
+<h2 id="Podspec提交私有仓库"><a href="#Podspec提交私有仓库" class="headerlink" title="Podspec提交私有仓库"></a>Podspec提交私有仓库</h2><h4 id="私有仓库说明"><a href="#私有仓库说明" class="headerlink" title="私有仓库说明"></a>私有仓库说明</h4><p>此处的私有仓库，指的是个人或者公司使用而不让其他人使用的仓库。与公有仓库类似，用于存放用户提交的podspec文件，以便于私有用户使用pod拉取自己的代码。</p>
+<h4 id="私有仓库创建"><a href="#私有仓库创建" class="headerlink" title="私有仓库创建"></a>私有仓库创建</h4><p>此创建与普通git仓库创建类似，最好使用README.md初始化，顺便补充README.md文件信息。</p>
+<h4 id="私有仓库本地安装"><a href="#私有仓库本地安装" class="headerlink" title="私有仓库本地安装"></a>私有仓库本地安装</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ pod repo add MyRepo xxx.xxx.git</span><br></pre></td></tr></table></figure>
+<p>在本地安装一个名叫 <code>MyRepo</code> 的私有仓库， <code>xxx.xxx.git</code> 为私有仓库地址。</p>
+<h4 id="查看本地私有仓库"><a href="#查看本地私有仓库" class="headerlink" title="查看本地私有仓库"></a>查看本地私有仓库</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ cd ~/.cocoapods/repos</span><br><span class="line">$ ls</span><br></pre></td></tr></table></figure>
+<p>可查看此文件夹下，除了官方的master仓库，还会有自己刚刚安装的MyRepo私有仓库。我们也可以顺带看看官方的仓库里到底都有什么。</p>
+<h4 id="提交-podspec-1"><a href="#提交-podspec-1" class="headerlink" title="提交.podspec"></a>提交.podspec</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ pod repo push MyRepo MyTest.podspec</span><br></pre></td></tr></table></figure>
+<p>向私有库 <code>MyRepo</code> 提交 <code>MyTest.podspec</code> 文件。</p>
+<p>需要注意的是，在提交 <code>.podspec</code> 前，同样需要修改 <code>.podspec</code> 文件，验证、打tag，源码提交。但私有库的验证，需要加上 <code>--private</code> 。完整的验证为： <code>$ pod lib lint --private</code> 。</p>
+<h4 id="私有库引用"><a href="#私有库引用" class="headerlink" title="私有库引用"></a>私有库引用</h4><p>只需要在编辑Podfile文件的时候，指定source源即可。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">source ‘xxx.xxx.com/MyRepo.git’</span><br></pre></td></tr></table></figure>
+<p>顺便补充官方的source源<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">source ‘https://github.com/CocoaPods/Specs.git’</span><br></pre></td></tr></table></figure></p>
+<h4 id="信息补充"><a href="#信息补充" class="headerlink" title="信息补充"></a>信息补充</h4><p>关于私有仓库：</p>
+<p><code>私有仓库只是用来存放私有的podspec，不存放代码。可为外网git，也可为内网git。总而言之，只是podspec的仓库。</code></p>
+<p>关于代码仓库：</p>
+<p><code>代码仓库用来存放自己的源代码的git，可为外网git，也可为内网git。总而言之，只是代码的仓库。</code></p>
+<p>一个私有库，可以存放n多个podspec文件，管理着n多个私有pod。</p>
+<p>私有仓库可以随意删除，但不会影响到代码仓库。私有仓库不要加入代码，因为加了也没有任何作用。</p>
+<p>私有库与公有库基本一样，只是一个是官方的git，一个是自己的git。私有库需安装，podspec验证需加上说明，使用的时候需引入。</p>
 
 </article>
 
@@ -178,7 +118,7 @@
     
 
     
-    <p>上次更新 2018-08-09</p>
+    <p>上次更新 2018-08-10</p>
     
     
         <a class="extend next post-next" href="/2018/08/09/同一台电脑管理多个SSH-key/">下一篇</a>
