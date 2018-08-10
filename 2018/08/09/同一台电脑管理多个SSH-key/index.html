@@ -55,55 +55,31 @@
     <div class="container">
         <article class="post markdown-style">
   <h1 class="post-title">同一台电脑管理多个SSH key</h1>
-  <ul>
-<li><p>生成<code>ssh key</code> github</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ssh-keygen -t rsa -C &quot;xxx@xxx.com&quot;</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<ul>
-<li><p>提示保存key的名字及路径</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Enter file in which to save the key (/Users/caichenghan/.ssh/id_rsa):</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<ul>
-<li><p>填写自定义路径</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/Users/caichenghan/.ssh/id_rsa_github</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>输入密码生成<code>ssh key</code> </p>
-<p> 可直接按Enter进入生成。</p>
-</li>
-<li><p>查看生成的ssh key</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ cd /Users/caichenghan/.ssh</span><br><span class="line">$ ls</span><br></pre></td></tr></table></figure>
-<p> 目录下会多出2个文件，分别为<code>id_rsa_github</code>、<code>id_rsa_github.pub</code>，前者为私钥，后者为公钥，我们只需要把公钥上传到github账户的公钥管理中即可。</p>
-<p> 我们还可以使用Finder查看该路径：Finder-&gt;右键-&gt;前往文件夹-&gt;<code>~/.ssh</code></p>
-</li>
-<li><p>查看公钥</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&amp; cat ~/.ssh/id_rsa_github.pub</span><br></pre></td></tr></table></figure>
-<p> 查看名为<code>id_rsa_github.pub</code>的公钥，然后将公复制下来，打开github个人设置中的公钥管理中，添加公钥即可。</p>
-</li>
-<li><p>账户验证</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -T git@github.com</span><br></pre></td></tr></table></figure>
-<p> 此时会有个提示，如下</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">The authenticity of host &apos;github.com (52.74.223.119)&apos; can&apos;t be established.</span><br><span class="line">RSA key fingerprint is SHA256:nThbg6kXUpJWGl7E1IGOCspRomTxdCARLviKw6E5SY8.</span><br><span class="line">Are you sure you want to continue connecting (yes/no)?</span><br></pre></td></tr></table></figure>
-<p> 说是无法与名为<code>github.com</code>的站点建立真实可靠的链接，RSA秘钥的指纹识别为256位的SHA….是否需要继续链接？</p>
-<p> 其实说白了就是要在本地保存github.com的公钥，与githu信息交互的时候要带上这个公钥，以便于github解密。有点类似于githug给你一把锁（公钥），你用这个锁锁住信息，然后丢给github。github就可以用它自己的钥匙（私钥）来解开这把锁来查看信息了。</p>
-<p> 站点的公钥信息，可以在<code>~/.ssh</code>目录下的<code>known_host</code>里查看。有时候需要删除这个<code>known_host</code>里的站点公钥，重新建立安全连接。</p>
-<p> 然而，此时的验证确是失败的，因为这个验证会使用默认的名为<code>id_rsa</code>和<code>id_rsa.pub</code>的文件进行信息交互，很显然这不是我们想要的。what can i do ?</p>
-</li>
-<li><p>生成ssh配置文件</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vim ~/.ssh/config</span><br></pre></td></tr></table></figure>
-<p> 配置<code>github</code>的ssh key</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Host github</span><br><span class="line">HostName github.com</span><br><span class="line">PreferredAuthentications publickey</span><br><span class="line">IdentityFile ~/.ssh/id_rsa_github</span><br></pre></td></tr></table></figure>
-<p> 其中<code>Host</code>为站点；<code>HostName</code>为站点名；<code>PreferredAuthentications</code>为优先使用公钥连接；<code>IdentityFile</code>，私钥路径。</p>
-<p> 如果站点为<code>ip地址</code>，则用<code>ip地址</code>代替<code>域名</code>即可。</p>
-</li>
-<li><p>再次验证</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -T git@github.com</span><br></pre></td></tr></table></figure>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Hi xxx! You&apos;ve successfully ...</span><br></pre></td></tr></table></figure>
-<p> 成功！</p>
-<p> 同理，我们还可以继续添加其它账号的<code>ssh key</code>，这样就可以同一台电脑，使用多个<code>ssh key</code>免密码的git操作了。</p>
-</li>
-</ul>
+  <h2 id="SSH-key生成"><a href="#SSH-key生成" class="headerlink" title="SSH key生成"></a>SSH key生成</h2><h4 id="ssh-key生成"><a href="#ssh-key生成" class="headerlink" title="ssh key生成"></a>ssh key生成</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ssh-keygen -t rsa -C &quot;xxx@xxx.com&quot;</span><br></pre></td></tr></table></figure>
+<p>此时会提示保存key的名字及路径，我们只需要自定义key的名字（路径）即可。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Enter file in which to save the key (/Users/caichenghan/.ssh/id_rsa):</span><br></pre></td></tr></table></figure>
+<h4 id="填写自定义路径"><a href="#填写自定义路径" class="headerlink" title="填写自定义路径"></a>填写自定义路径</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/Users/caichenghan/.ssh/id_rsa_github</span><br></pre></td></tr></table></figure>
+<p>输入密码生成 <code>ssh key</code> ，可直接按Enter进入生成。</p>
+<h4 id="查看生成的ssh-key"><a href="#查看生成的ssh-key" class="headerlink" title="查看生成的ssh key"></a>查看生成的ssh key</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ cd /Users/caichenghan/.ssh</span><br><span class="line">$ ls</span><br></pre></td></tr></table></figure>
+<p>目录下会多出2个文件，分别为 <code>id_rsa_github</code> 、 <code>id_rsa_github.pub</code> ，前者为私钥，后者为公钥，我们只需要把公钥上传到github账户的公钥管理中即可。</p>
+<p>我们还可以使用Finder查看该路径：Finder-&gt;右键-&gt;前往文件夹-&gt; <code>~/.ssh</code> </p>
+<h4 id="查看公钥"><a href="#查看公钥" class="headerlink" title="查看公钥"></a>查看公钥</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ cat ~/.ssh/id_rsa_github.pub</span><br></pre></td></tr></table></figure>
+<p>查看名为 <code>id_rsa_github.pub</code> 的公钥，然后将公复制下来，打开 <code>Github</code> 个人设置中的 <code>公钥管理</code> 中，添加公钥即可。</p>
+<h4 id="账户验证"><a href="#账户验证" class="headerlink" title="账户验证"></a>账户验证</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ssh -T git@github.com</span><br></pre></td></tr></table></figure>
+<p>此时会有个提示，如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">The authenticity of host &apos;github.com (52.74.223.119)&apos; can&apos;t be established.</span><br><span class="line">RSA key fingerprint is SHA256:nThbg6kXUpJWGl7E1IGOCspRomTxdCARLviKw6E5SY8.</span><br><span class="line">Are you sure you want to continue connecting (yes/no)?</span><br></pre></td></tr></table></figure>
+<p>说是无法与名为 <code>github.com</code> 的站点建立真实可靠的链接，RSA秘钥的指纹识别为256位的SHA….是否需要继续链接？</p>
+<p>其实说白了就是要在本地保存 <code>github.com</code> 的公钥，与 <code>Githu</code> 信息交互的时候要带上这个公钥，以便于 <code>Github</code> 解密。有点类似于 <code>Githug</code> 给你一把锁（公钥），你用这个锁锁住信息，然后丢给 <code>Github</code> 。 <code>github</code> 就可以用它自己的钥匙（私钥）来解开这把锁来查看信息了。</p>
+<p>站点的公钥信息，可以在 <code>~/.ssh</code> 目录下的 <code>known_host</code> 里查看。有时候需要删除这个 <code>known_host</code> 里的站点公钥，重新建立安全连接。</p>
+<p>然而，此时的验证确是失败的，因为这个验证会使用默认的名为 <code>id_rsa</code> 和 <code>id_rsa.pub</code> 的文件进行信息交互，很显然这不是我们想要的。what can i do ?</p>
+<h2 id="ssh-key-配置文件制作"><a href="#ssh-key-配置文件制作" class="headerlink" title="ssh key 配置文件制作"></a>ssh key 配置文件制作</h2><h4 id="配置文件制作"><a href="#配置文件制作" class="headerlink" title="配置文件制作"></a>配置文件制作</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vim ~/.ssh/config</span><br></pre></td></tr></table></figure>
+<h4 id="配置-github-的ssh-key"><a href="#配置-github-的ssh-key" class="headerlink" title="配置 github 的ssh key"></a>配置 <code>github</code> 的ssh key</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Host github</span><br><span class="line">HostName github.com</span><br><span class="line">PreferredAuthentications publickey</span><br><span class="line">IdentityFile ~/.ssh/id_rsa_github</span><br></pre></td></tr></table></figure>
+<p>其中 <code>Host</code> 为站点； <code>HostName</code> 为站点名； <code>PreferredAuthentications</code> 为优先使用公钥连接； <code>IdentityFile</code> ，私钥路径。</p>
+<p>如果站点为 <code>ip地址</code> ，则用 <code>ip地址</code> 代替 <code>域名</code> 即可。</p>
+<h4 id="再次验证"><a href="#再次验证" class="headerlink" title="再次验证"></a>再次验证</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ssh -T git@github.com</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Hi xxx! You&apos;ve successfully ...</span><br></pre></td></tr></table></figure>
+<p>成功！</p>
+<p>同理，我们还可以继续添加其它账号的 <code>ssh key</code> ，这样就可以同一台电脑，使用多个 <code>ssh key</code> 免密码的git操作了。</p>
 
 </article>
 
@@ -114,7 +90,7 @@
     
 
     
-    <p>上次更新 2018-08-09</p>
+    <p>上次更新 2018-08-10</p>
     
     
         <a class="extend next post-next" href="/2018/08/09/Hexo搭建Github个人博客/">下一篇</a>
