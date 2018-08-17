@@ -3,7 +3,8 @@
   width: 100%;
 }
 .post-title {
-  padding: 0;
+  margin: 35px 0 25px;
+  text-align: center;
 }
 .post ul {
   margin: 10px 5px 20px 25px;
